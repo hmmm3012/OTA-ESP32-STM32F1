@@ -221,14 +221,31 @@ void setup(void)
         Serial.println("SPIFFS Mount Failed");
         return;
   }
+  WiFi.mode(WIFI_AP_STA);
+  /* start SmartConfig */
+  WiFi.beginSmartConfig();
+ 
+  /* Wait for SmartConfig packet from mobile */
+  while (!WiFi.smartConfigDone()) {
+    delay(500);
+    Serial.print(".");
+  }
+  /* Wait for WiFi to connect to AP */
+  //Serial.println("Waiting for WiFi");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("WiFi Connected.");
+  Serial.print("IP Address: ");
+  Serial.println(WiFi.localIP());
   Serial.begin(115200, SERIAL_8E1);
   pinMode(BOOT01, OUTPUT);
   pinMode(NRST1, OUTPUT);
   pinMode(BOOT02, OUTPUT);
   pinMode(NRST2, OUTPUT);
-  WiFi.mode(WIFI_STA);
-  //WiFi.config(local_IP, gateway, subnet);
-  WiFi.begin(ssid, password);
+  //WiFi.mode(WIFI_STA);
+  //WiFi.begin(sid, passwords);
 
   RunMode();
   if (WiFi.waitForConnectResult() == WL_CONNECTED)
